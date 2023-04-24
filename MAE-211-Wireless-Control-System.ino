@@ -107,6 +107,8 @@ void stop(){
     Serial.print('Stopped');
     digitalWrite(motorLPin, LOW);
     digitalWrite(motorRPin, LOW);
+    digitalWrite(motorLRev, LOW);
+    digitalWrite(motorRRev, LOW);
     return;
 }
 
