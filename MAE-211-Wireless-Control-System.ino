@@ -11,9 +11,11 @@ int cmd;
 
 // Motor Pins and Vars
 const int motorLPin = 9; // Left Motor Pin (IN1)
-const int motorLRev = 10; // Left Motor Reverse Pin (IN2)
-const int motorRPin = 11; // Right Motor Pin (IN3)
-const int motorRRev = 12; // Right Motor Reverse Pin (IN4)
+const int motorLRev = 5; // Left Motor Reverse Pin (IN2)
+const int motorRPin = 10; // Right Motor Pin (IN3)
+const int motorRRev = 6; // Right Motor Reverse Pin (IN4)
+
+const int speed = 255;
 
 void setup() {
     Serial.begin(9600); // Serial Readout is 9600
@@ -35,34 +37,34 @@ void setup() {
 }
 
 void loop() {
-    Serial.println("Pre-IR");
+    //Serial.println("Pre-IR");
     if (IrReceiver.decode()) { // On IR Receive, decode
         IrReceiver.resume(); // resume reception
         Serial.print(IrReceiver.decodedIRData.command); // Print Reception
         cmd = IrReceiver.decodedIRData.command; // Set as CMD
-        if (cmd == 70) { // Check CMD for Mode Button
+        if (cmd == 201) { // Check CMD for Mode Button
         Serial.print("Received");
             while (true) {  // Infinite loop to be broken if Power is pressed
                 if (IrReceiver.decode()){ // IR Receiver for shutdown
                     IrReceiver.resume();
                     Serial.print(IrReceiver.decodedIRData.command);
                     cmd = IrReceiver.decodedIRData.command;
-                    if (cmd == /*Stop Button*/) {
+                    if (cmd == 114/*Stop Button*/) {
                         stop();
                     }
-                    else if (cmd == /*Right Button*/) {
+                    else if (cmd == 198/*Right Button*/) {
                         turnRight();
                     }
-                    else if (cmd == /*Left Button*/) {
+                    else if (cmd == 199/*Left Button*/) {
                         turnLeft();
                     }
-                    else if (cmd == /*Forward Button*/) {
+                    else if (cmd == 246/*Forward Button*/) {
                         forward();
                     }
-                    else if (cmd == /*Reverse Button*/) {
+                    else if (cmd == 247/*Reverse Button*/) {
                         reverse();
                     }
-                    if (cmd == 69) {
+                    if (cmd == 224) {
                         stop();
                         break;
                     }
@@ -74,32 +76,28 @@ void loop() {
 
 
 void forward() {
-    digitalWrite(motorLPin, HIGH);
-    digitalWrite(motorRPin, HIGH);
-    return;
-}
-
-void turnRight() {
-    digitalWrite(motorLPin, LOW);
-    digitalWrite(motorRPin, HIGH);
+    stop();
+    analogWrite(motorLPin, speed);
+    analogWrite(motorRPin, speed);
     return;
 }
 
 void turnLeft() {
+    digitalWrite(motorLPin, LOW);
+    analogWrite(motorRPin, speed);
+    return;
+}
+
+void turnRight() {
     digitalWrite(motorRPin, LOW);
-    digitalWrite(motorLPin, HIGH);
+    analogWrite(motorLPin, speed);
     return;
 }
 
 void reverse() {
     stop();
-    digitalWrite(motorRRev, HIGH);
-    digitalWrite(motorLRev, HIGH);
-    delay(1000);
-    shift();
-    delay(1000);
-    digitalWrite(motorRRev, LOW);
-    digitalWrite(motorLRev, LOW);
+    analogWrite(motorRRev, speed);
+    analogWrite(motorLRev, speed);
     return;
 }
 
